@@ -1,0 +1,12 @@
+# Tema minimalista da Central de Vagas OS.
+# Paleta sobria: acento verde-petroleo sobre fundo claro.
+[theme]
+base = "light"
+primaryColor = "#2F5D62"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F5F4"
+textColor = "#1E2424"
+font = "sans serif"
+
+[server]
+headless = true

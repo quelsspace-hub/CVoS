@@ -1,0 +1,29 @@
+# Ambiente e segredos
+.env
+*.env
+!.env.example
+
+# Dados locais e backups (nao versionar dados pessoais)
+data/
+backups/
+logs/
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
+
+# Testes / cache
+.pytest_cache/
+.streamlit/secrets.toml
