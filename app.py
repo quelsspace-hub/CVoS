@@ -5,8 +5,8 @@ Ponto de entrada da Central de Vagas OS (Streamlit).
 Responsabilidades:
   - Configurar a pagina e inicializar o banco de dados.
   - Executar backup automatico na inicializacao, quando habilitado.
+  - Renderizar a sidebar estilizada (ui/sidebar.py) com o menu de navegacao.
   - Exibir avisos de configuracao (ex.: chave Gemini ausente).
-  - Rotear entre as paginas via barra lateral.
   - Oferecer redirecionamento seguro usado pelos atalhos da pagina inicial.
 
 Nao contem regra de negocio: apenas orquestra as paginas da pasta ui/.
@@ -22,7 +22,7 @@ import streamlit as st
 import config
 from database.database import init_db
 from services import backup_service
-from ui import armazenamento, home, ia, settings, vagas
+from ui import armazenamento, home, ia, settings, sidebar, vagas
 from utils.logger import get_logger
 
 logger = get_logger("app")
@@ -84,12 +84,7 @@ def main() -> None:
     st.session_state.setdefault("pagina", "Início")
 
     avisos = config.validate_config()
-
-    with st.sidebar:
-        st.title(config.APP_TITLE)
-        st.radio("Navegação", list(PAGINAS.keys()), key="pagina")
-        for aviso in avisos:
-            st.warning(aviso)
+    sidebar.render(list(PAGINAS.keys()), avisos)
 
     pagina_atual = st.session_state["pagina"]
     PAGINAS[pagina_atual](navegar_para)
