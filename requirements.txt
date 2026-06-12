@@ -1,5 +1,6 @@
 # Central de Vagas OS - Dependencias Python
-# Uso pessoal, execucao local. Versoes fixadas por faixa para estabilidade.
+# Versoes fixadas por faixa para estabilidade.
+# Para Streamlit Cloud: configure GEMINI_API_KEY em Settings > Secrets.
 
 # Interface
 streamlit>=1.40,<2.0
@@ -7,17 +8,14 @@ streamlit>=1.40,<2.0
 # Banco de dados / ORM
 SQLAlchemy>=2.0,<3.0
 
-# Migracoes (opcional - habilitar apenas se necessario)
-# alembic>=1.13,<2.0
-
-# Configuracao via .env
+# Configuracao via .env (local) ou st.secrets (Streamlit Cloud)
 python-dotenv>=1.0,<2.0
 
 # IA (Gemini) - SDK unificado oficial Google GenAI
 google-genai>=1.0,<2.0
 
-# Backup em nuvem - provedor S3 (opcional; usado apenas se BACKUP_PROVIDER=s3)
-boto3>=1.34,<2.0
+# Backup em nuvem S3 (opcional; comentar se nao usar BACKUP_PROVIDER=s3)
+# boto3>=1.34,<2.0
 
 # Testes
 pytest>=8.0,<9.0
