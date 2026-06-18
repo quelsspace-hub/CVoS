@@ -23,13 +23,21 @@ def caminho_env() -> Path:
 
 def salvar_no_env(updates: dict[str, str]) -> None:
     """
-    Atualiza (ou insere) as variaveis informadas no arquivo .env.
+    Atualiza (ou insere) as variaveis informadas no arquivo .env e nos
+    os.environ em memoria.
 
     Preserva linhas existentes, comentarios e ordem. Cria o arquivo caso
-    ele ainda nao exista.
+    ele ainda nao exista. Em ambientes de somente leitura (ex.: Streamlit
+    Cloud), a escrita em arquivo falha silenciosamente, mas os valores
+    continuam aplicados na sessao via os.environ.
     """
     if not updates:
         return
+
+    # Aplica na sessao atual independente do arquivo.
+    import os as _os
+    for chave, valor in updates.items():
+        _os.environ[chave] = valor
 
     caminho = caminho_env()
     linhas = caminho.read_text(encoding="utf-8").splitlines() if caminho.exists() else []
@@ -48,7 +56,12 @@ def salvar_no_env(updates: dict[str, str]) -> None:
     for chave, valor in restantes.items():
         resultado.append(f"{chave}={valor}")
 
-    caminho.write_text("\n".join(resultado) + "\n", encoding="utf-8")
+    try:
+        caminho.write_text("\n".join(resultado) + "\n", encoding="utf-8")
+    except OSError:
+        # Filesystem somente-leitura (ex.: Streamlit Cloud).
+        # Os valores ja foram aplicados em os.environ acima.
+        pass
 
 
 def definir_tema(base: str) -> None:
@@ -64,16 +77,20 @@ def definir_tema(base: str) -> None:
     caminho = config.BASE_DIR / ".streamlit" / "config.toml"
     caminho.parent.mkdir(parents=True, exist_ok=True)
 
-    if not caminho.exists():
-        caminho.write_text(f'[theme]\nbase = "{base}"\n', encoding="utf-8")
-        return
+    try:
+        if not caminho.exists():
+            caminho.write_text(f'[theme]\nbase = "{base}"\n', encoding="utf-8")
+            return
 
-    texto = caminho.read_text(encoding="utf-8")
-    if re.search(r'base\s*=\s*".*?"', texto):
-        texto = re.sub(r'base\s*=\s*".*?"', f'base = "{base}"', texto, count=1)
-    elif "[theme]" in texto:
-        texto = texto.replace("[theme]", f'[theme]\nbase = "{base}"', 1)
-    else:
-        texto = texto + f'\n[theme]\nbase = "{base}"\n'
+        texto = caminho.read_text(encoding="utf-8")
+        if re.search(r'base\s*=\s*".*?"', texto):
+            texto = re.sub(r'base\s*=\s*".*?"', f'base = "{base}"', texto, count=1)
+        elif "[theme]" in texto:
+            texto = texto.replace("[theme]", f'[theme]\nbase = "{base}"', 1)
+        else:
+            texto = texto + f'\n[theme]\nbase = "{base}"\n'
 
-    caminho.write_text(texto, encoding="utf-8")
+        caminho.write_text(texto, encoding="utf-8")
+    except OSError:
+        # Filesystem somente-leitura (ex.: Streamlit Cloud); ignora silenciosamente.
+        pass

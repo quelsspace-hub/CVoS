@@ -1,0 +1,3 @@
+@echo off
+cd /d "%~dp0"
+.venv\Scripts\python -m streamlit run app.py --server.port=8502 --server.headless true > streamlit_8502.log 2>&1

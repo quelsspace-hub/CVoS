@@ -1,0 +1,9 @@
+2026-06-12 17:04:02.455 Uvicorn server started on 0.0.0.0:8502
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8502
+  Network URL: http://192.168.0.35:8502
+  External URL: http://201.17.159.174:8502
+
+2026-06-12 17:04:17,598 | INFO     | central_de_vagas.app | Aplicação inicializada.

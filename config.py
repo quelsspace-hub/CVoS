@@ -18,10 +18,36 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
-# Carregamento do arquivo .env (se existir)
+# Carregamento de configuracoes: .env local e, como fallback, st.secrets
 # ---------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
+
+
+def _load_streamlit_secrets() -> None:
+    """
+    Injeta os segredos do Streamlit Cloud nas variaveis de ambiente.
+
+    No Streamlit Cloud nao ha arquivo .env; as chaves sao configuradas na
+    interface da plataforma (Settings > Secrets) e ficam disponiveis via
+    st.secrets. Esta funcao as copia para os.environ antes que os valores
+    de configuracao sejam lidos, de modo que o restante do codigo nao
+    precisa saber de onde o segredo veio.
+
+    Valores ja presentes no ambiente (vindos do .env local) nao sao
+    sobrescritos, garantindo que o ambiente local tenha precedencia.
+    """
+    try:
+        import streamlit as st
+
+        for chave, valor in st.secrets.items():
+            if isinstance(valor, str) and not os.environ.get(chave):
+                os.environ[chave] = valor
+    except Exception:
+        pass
+
+
+_load_streamlit_secrets()
 
 
 def _get_bool(name: str, default: bool = False) -> bool:
